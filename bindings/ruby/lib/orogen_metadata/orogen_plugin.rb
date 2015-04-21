@@ -64,11 +64,14 @@ module Orocos
 
             # Entry point for the orogen registration 
             def registered_on(task_context)
+                return if task_context.superclass.metadata
                 task_context.metadata = OroGen::MetaData.new
                 task_context.property("metadata","/metadata/TaskContext")
             end
 
             def register_for_generation(task)
+                #We need to process this here because we might hace more ports than the parent, so we 
+                #generate the metadata code here, but not register the propery from above a second time
                 code = Array.new
                 code << "metadata::TaskContext md;"
                 task.metadata.input_ports.each do |k,v|
